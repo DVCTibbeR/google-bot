@@ -1,13 +1,15 @@
 import axios from "axios";
 import database from "./lib/database.js";
 import * as cheerio from "cheerio";
-import { createHash } from "crypto";
+import { createHash, randomUUID } from "crypto";
 
 const URL = "https://en.wikipedia.org/wiki/List_of_most-subscribed_YouTube_channels";
 const ITEM_COUNT = 50;
 const ROW_COUNT = 7;
 
 axios.get(URL, {}).then(res => {
+	const VISIT_ID = randomUUID();
+
 	const $ = cheerio.load(res.data);
 
 	let rows = [];
@@ -24,6 +26,8 @@ axios.get(URL, {}).then(res => {
 		const YOUTUBER_RANK = (i / ROW_COUNT) + 1;
 
 		database.set("youtubers", YOUTUBER_HASH, {
+			id: randomUUID(),
+			visitId: VISIT_ID,
 			rank: YOUTUBER_RANK,
 			username: YOUTUBER[0],
 			subscribers: parseFloat(YOUTUBER[3]),
@@ -34,4 +38,8 @@ axios.get(URL, {}).then(res => {
 
 		console.log(`#${YOUTUBER_RANK} - ${YOUTUBER[0]}`);
 	}
+	
+	database.set("visits", VISIT_ID, { collectedOn: new Date(), url: URL });
 });
+
+console.log(database.data);
