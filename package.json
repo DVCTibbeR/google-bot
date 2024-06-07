@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "axios": "^1.7.2",
+    "bson": "^6.7.0"
+  }
+}
