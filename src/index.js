@@ -2,6 +2,7 @@ import axios from "axios";
 import database from "./lib/database.js";
 import * as cheerio from "cheerio";
 import { createHash, randomUUID } from "crypto";
+import { writeFileSync } from "fs";
 
 const URL = "https://en.wikipedia.org/wiki/List_of_most-subscribed_YouTube_channels";
 const ITEM_COUNT = 50;
@@ -27,7 +28,6 @@ axios.get(URL, {}).then(res => {
 		const YOUTUBER_HASH = createHash("sha256", {}).update(YOUTUBER[0]).digest("hex");
 		const YOUTUBER_RANK = (i / ROW_COUNT) + 1;
 		const YOUTUBER_SUBS = parseFloat(YOUTUBER[3]);
-		const YOUTUBER_LANG = YOUTUBER[4].replace(/\[(.*)\]/, "");
 
 		const YOUTUBER_VISITS = database.exists("youtubers", YOUTUBER_HASH) ? database.get("youtubers", YOUTUBER_HASH).visits : [];
 
@@ -38,9 +38,9 @@ axios.get(URL, {}).then(res => {
 				rank: YOUTUBER_RANK,
 				subscribers: YOUTUBER_SUBS,
 			}],
-			language: YOUTUBER_LANG,
+			language: YOUTUBER[4].replace(/\[(.*)\]/, ""),
 			category: YOUTUBER[5],
-			country: YOUTUBER[6]
+			country: YOUTUBER[6].replace(/\[(.*)\]/, "")
 		});
 
 		youtubers.push(YOUTUBER_HASH);
@@ -50,3 +50,5 @@ axios.get(URL, {}).then(res => {
 	
 	database.set("visits", VISIT_ID, { collectedOn: new Date(), url: URL, youtubers });
 });
+
+writeFileSync("output.json", JSON.stringify(database.data), {});
