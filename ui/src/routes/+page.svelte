@@ -8,7 +8,7 @@
 	function loadData(ev: any) {
 		const READER = new FileReader();
 		
-		READER.onload = () => { console.log(JSON.parse(READER.result!.toString())); data = JSON.parse(READER.result!.toString()); };
+		READER.onload = () => { data = JSON.parse(READER.result!.toString()); };
 
 		READER.readAsText(ev.target.files[0]);
 	}
