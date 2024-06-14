@@ -49,6 +49,6 @@ axios.get(URL, {}).then(res => {
 	}
 	
 	database.set("visits", VISIT_ID, { collectedOn: new Date(), url: URL, youtubers });
-});
 
-writeFileSync("output.json", JSON.stringify(database.data), {});
+	writeFileSync("output.json", JSON.stringify(database.data), {});
+});
